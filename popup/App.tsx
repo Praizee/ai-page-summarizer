@@ -1,96 +1,101 @@
-import { useState, useEffect, useCallback } from 'react'
-import type { SummaryResult, ErrorCode, ExtResponse } from '../shared/types'
-import { cacheKey, CACHE_TTL_MS } from '../shared/utils'
+import { useState, useEffect, useCallback } from "react";
+import type { SummaryResult, ErrorCode, ExtResponse } from "../shared/types";
+import { cacheKey, CACHE_TTL_MS } from "../shared/utils";
+import { Settings } from "lucide-react";
 
-type View = 'idle' | 'loading' | 'error' | 'result'
+type View = "idle" | "loading" | "error" | "result";
 
 const ERROR_MESSAGES: Record<ErrorCode, string> = {
-  NO_API_KEY:       'No API key set. Open Settings to add one.',
-  EXTRACTION_FAIL:  "Couldn't extract content from this page.",
+  NO_API_KEY: "No API key set. Open Settings to add one.",
+  EXTRACTION_FAIL: "Couldn't extract content from this page.",
   UNSUPPORTED_PAGE: "This page type can't be summarized.",
-  API_AUTH_ERROR:   'Invalid API key. Check your Settings.',
-  RATE_LIMITED:     'Rate limit hit. Wait a moment and try again.',
-  NETWORK_ERROR:    'Network error. Check your connection.',
-  API_ERROR:        'AI service error. Try again shortly.',
-  PARSE_ERROR:      'Unexpected AI response. Try again.',
-}
+  API_AUTH_ERROR: "Invalid API key. Check your Settings.",
+  RATE_LIMITED: "Rate limit hit. Wait a moment and try again.",
+  NETWORK_ERROR: "Network error. Check your connection.",
+  API_ERROR: "AI service error. Try again shortly.",
+  PARSE_ERROR: "Unexpected AI response. Try again.",
+};
 
 export default function App() {
-  const [view, setView]           = useState<View>('idle')
-  const [result, setResult]       = useState<SummaryResult | null>(null)
-  const [errorMsg, setErrorMsg]   = useState('')
-  const [errorCode, setErrorCode] = useState<ErrorCode | null>(null)
-  const [tabId, setTabId]         = useState<number | null>(null)
-  const [url, setUrl]             = useState('')
-  const [highlighted, setHighlighted] = useState(false)
+  const [view, setView] = useState<View>("idle");
+  const [result, setResult] = useState<SummaryResult | null>(null);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [errorCode, setErrorCode] = useState<ErrorCode | null>(null);
+  const [tabId, setTabId] = useState<number | null>(null);
+  const [url, setUrl] = useState("");
+  const [highlighted, setHighlighted] = useState(false);
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-      if (!tab?.id || !tab.url) return
-      setTabId(tab.id)
-      setUrl(tab.url)
+      if (!tab?.id || !tab.url) return;
+      setTabId(tab.id);
+      setUrl(tab.url);
 
-      const key = cacheKey(tab.url)
-      chrome.storage.local.get(key, stored => {
-        const cached = stored[key] as SummaryResult | undefined
+      const key = cacheKey(tab.url);
+      chrome.storage.local.get(key, (stored) => {
+        const cached = stored[key] as SummaryResult | undefined;
         if (cached && Date.now() - cached.cachedAt < CACHE_TTL_MS) {
-          setResult({ ...cached, fromCache: true })
-          setView('result')
+          setResult({ ...cached, fromCache: true });
+          setView("result");
         }
-      })
-    })
-  }, [])
+      });
+    });
+  }, []);
 
   function showError(code: ErrorCode, fallback: string) {
-    setErrorCode(code)
-    setErrorMsg(ERROR_MESSAGES[code] ?? fallback)
-    setView('error')
+    setErrorCode(code);
+    setErrorMsg(ERROR_MESSAGES[code] ?? fallback);
+    setView("error");
   }
 
   const handleSummarize = useCallback(() => {
-    if (tabId === null) return
-    setView('loading')
+    if (tabId === null) return;
+    setView("loading");
     chrome.runtime.sendMessage(
-      { type: 'SUMMARIZE_PAGE', tabId, url },
+      { type: "SUMMARIZE_PAGE", tabId, url },
       (res: ExtResponse) => {
         if (chrome.runtime.lastError) {
-          showError('NETWORK_ERROR', chrome.runtime.lastError.message ?? '')
-          return
+          showError("NETWORK_ERROR", chrome.runtime.lastError.message ?? "");
+          return;
         }
-        if (res.type === 'ERROR') {
-          showError(res.code, res.message)
-        } else if (res.type === 'SUMMARY_RESULT') {
-          setResult(res)
-          setHighlighted(false)
-          setView('result')
+        if (res.type === "ERROR") {
+          showError(res.code, res.message);
+        } else if (res.type === "SUMMARY_RESULT") {
+          setResult(res);
+          setHighlighted(false);
+          setView("result");
         }
-      }
-    )
-  }, [tabId, url])
+      },
+    );
+  }, [tabId, url]);
 
   function handleHighlight() {
-    if (!result || tabId === null) return
+    if (!result || tabId === null) return;
     chrome.runtime.sendMessage(
-      { type: 'HIGHLIGHT_SENTENCES', tabId, sentences: result.highlightSentences },
-      () => setHighlighted(true)
-    )
+      {
+        type: "HIGHLIGHT_SENTENCES",
+        tabId,
+        sentences: result.highlightSentences,
+      },
+      () => setHighlighted(true),
+    );
   }
 
   function handleClear() {
-    chrome.runtime.sendMessage({ type: 'CLEAR_CACHE', url }, () => {
-      setResult(null)
-      setHighlighted(false)
-      setView('idle')
-    })
+    chrome.runtime.sendMessage({ type: "CLEAR_CACHE", url }, () => {
+      setResult(null);
+      setHighlighted(false);
+      setView("idle");
+    });
   }
 
   return (
     <div className="w-[400px] flex flex-col bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 select-none">
       <Header />
 
-      {view === 'idle'    && <IdleView onSummarize={handleSummarize} />}
-      {view === 'loading' && <LoadingView />}
-      {view === 'error'   && (
+      {view === "idle" && <IdleView onSummarize={handleSummarize} />}
+      {view === "loading" && <LoadingView />}
+      {view === "error" && (
         <ErrorView
           message={errorMsg}
           code={errorCode}
@@ -98,7 +103,7 @@ export default function App() {
           onSettings={() => chrome.runtime.openOptionsPage()}
         />
       )}
-      {view === 'result' && result && (
+      {view === "result" && result && (
         <ResultView
           result={result}
           highlighted={highlighted}
@@ -107,17 +112,18 @@ export default function App() {
         />
       )}
     </div>
-  )
+  );
 }
 
-// ─── Sub-views ────────────────────────────────────────────────────────────────
-
+// Sub-views
 function Header() {
   return (
     <header className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
       <div className="flex items-center gap-2">
         <div className="w-6 h-6 rounded bg-indigo-600 flex items-center justify-center shrink-0">
-          <span className="text-white text-[10px] font-bold leading-none">AI</span>
+          <span className="text-white text-[10px] font-bold leading-none">
+            AI
+          </span>
         </div>
         <span className="text-sm font-semibold">AI Page Summarizer</span>
       </div>
@@ -128,17 +134,18 @@ function Header() {
         title="Settings"
         aria-label="Open settings"
       >
-        ⚙
+        <Settings />
       </button>
     </header>
-  )
+  );
 }
 
 function IdleView({ onSummarize }: { onSummarize: () => void }) {
   return (
     <div className="p-5 flex flex-col gap-4">
       <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-        Get AI-powered bullet points, key insights, and estimated reading time for any page.
+        Get AI-powered bullet points, key insights, and estimated reading time
+        for any page.
       </p>
       <button
         type="button"
@@ -148,16 +155,18 @@ function IdleView({ onSummarize }: { onSummarize: () => void }) {
         Summarize This Page
       </button>
     </div>
-  )
+  );
 }
 
 function LoadingView() {
   return (
     <div className="p-5 flex flex-col items-center gap-3 py-12">
       <div className="w-8 h-8 rounded-full border-4 border-zinc-200 dark:border-zinc-700 border-t-indigo-600 animate-spin" />
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">Analyzing page…</p>
+      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        Analyzing page…
+      </p>
     </div>
-  )
+  );
 }
 
 function ErrorView({
@@ -166,17 +175,21 @@ function ErrorView({
   onRetry,
   onSettings,
 }: {
-  message: string
-  code: ErrorCode | null
-  onRetry: () => void
-  onSettings: () => void
+  message: string;
+  code: ErrorCode | null;
+  onRetry: () => void;
+  onSettings: () => void;
 }) {
-  const showSettings = code === 'NO_API_KEY' || code === 'API_AUTH_ERROR'
+  const showSettings = code === "NO_API_KEY" || code === "API_AUTH_ERROR";
   return (
     <div className="p-5 flex flex-col gap-3">
       <div className="flex items-start gap-3 p-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-100 dark:border-red-900">
-        <span className="text-red-500 shrink-0 mt-0.5" aria-hidden>⚠</span>
-        <p className="text-sm text-red-700 dark:text-red-300 leading-snug">{message}</p>
+        <span className="text-red-500 shrink-0 mt-0.5" aria-hidden>
+          ⚠
+        </span>
+        <p className="text-sm text-red-700 dark:text-red-300 leading-snug">
+          {message}
+        </p>
       </div>
       <div className="flex gap-2">
         <button
@@ -197,7 +210,7 @@ function ErrorView({
         )}
       </div>
     </div>
-  )
+  );
 }
 
 function ResultView({
@@ -206,39 +219,45 @@ function ResultView({
   onHighlight,
   onClear,
 }: {
-  result: SummaryResult
-  highlighted: boolean
-  onHighlight: () => void
-  onClear: () => void
+  result: SummaryResult;
+  highlighted: boolean;
+  onHighlight: () => void;
+  onClear: () => void;
 }) {
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState(false);
 
   function handleCopy() {
     const text = [
       `# ${result.title}`,
       `~${result.readingTime} min read · ${result.wordCount.toLocaleString()} words`,
-      '',
-      '## Summary',
-      ...result.summary.map(s => `• ${s}`),
-      '',
-      '## Key Insights',
-      ...result.insights.map(s => `→ ${s}`),
-    ].join('\n')
+      "",
+      "## Summary",
+      ...result.summary.map((s) => `• ${s}`),
+      "",
+      "## Key Insights",
+      ...result.insights.map((s) => `→ ${s}`),
+    ].join("\n");
     navigator.clipboard.writeText(text).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    })
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   }
 
   return (
     <div className="flex flex-col max-h-[560px] overflow-y-auto">
       {/* Title + meta */}
       <div className="px-4 pt-4 pb-3">
-        <h2 className="text-sm font-semibold leading-snug line-clamp-2">{result.title}</h2>
+        <h2 className="text-sm font-semibold leading-snug line-clamp-2">
+          {result.title}
+        </h2>
         <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-          <span className="text-xs text-zinc-400">~{result.readingTime} min read</span>
+          <span className="text-xs text-zinc-400">
+            ~{result.readingTime} min read
+          </span>
           <span className="text-zinc-200 dark:text-zinc-700 text-xs">·</span>
-          <span className="text-xs text-zinc-400">{result.wordCount.toLocaleString()} words</span>
+          <span className="text-xs text-zinc-400">
+            {result.wordCount.toLocaleString()} words
+          </span>
           {result.fromCache && (
             <span className="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded font-medium">
               cached
@@ -256,8 +275,13 @@ function ResultView({
         </h3>
         <ul className="space-y-2">
           {result.summary.map((item, i) => (
-            <li key={i} className="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300 leading-snug">
-              <span className="text-indigo-500 shrink-0 mt-0.5" aria-hidden>•</span>
+            <li
+              key={i}
+              className="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300 leading-snug"
+            >
+              <span className="text-indigo-500 shrink-0 mt-0.5" aria-hidden>
+                •
+              </span>
               <span>{item}</span>
             </li>
           ))}
@@ -273,8 +297,13 @@ function ResultView({
         </h3>
         <ul className="space-y-2">
           {result.insights.map((item, i) => (
-            <li key={i} className="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300 leading-snug">
-              <span className="text-indigo-400 shrink-0 mt-0.5" aria-hidden>→</span>
+            <li
+              key={i}
+              className="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300 leading-snug"
+            >
+              <span className="text-indigo-400 shrink-0 mt-0.5" aria-hidden>
+                →
+              </span>
               <span>{item}</span>
             </li>
           ))}
@@ -291,7 +320,7 @@ function ResultView({
           disabled={highlighted || result.highlightSentences.length === 0}
           className="flex-1 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg px-3 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 min-w-[130px]"
         >
-          {highlighted ? 'Highlighted ✓' : 'Highlight Key Sections'}
+          {highlighted ? "Highlighted ✓" : "Highlight Key Sections"}
         </button>
         <button
           type="button"
@@ -299,7 +328,7 @@ function ResultView({
           className="border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg px-3 py-2 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
           title="Copy summary"
         >
-          {copied ? '✓' : '⎘'}
+          {copied ? "✓" : "⎘"}
         </button>
         <button
           type="button"
@@ -311,5 +340,6 @@ function ResultView({
         </button>
       </div>
     </div>
-  )
+  );
 }
+
