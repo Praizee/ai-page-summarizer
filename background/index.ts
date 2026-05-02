@@ -154,6 +154,33 @@ async function fetchSummary(
         choices: { message: { content: string } }[];
       };
       raw = data.choices[0].message.content;
+    } else if (provider === "groq") {
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a helpful webpage summarizer. Always respond with valid JSON.",
+            },
+            { role: "user", content: prompt },
+          ],
+          temperature: 0.3,
+          max_tokens: 800,
+          response_format: { type: "json_object" },
+        }),
+      });
+      if (!res.ok) return { error: httpError(res.status) };
+      const data = (await res.json()) as {
+        choices: { message: { content: string } }[];
+      };
+      raw = data.choices[0].message.content;
     } else {
       const res = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,

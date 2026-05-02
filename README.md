@@ -45,7 +45,8 @@ The extension icon will appear in your toolbar.
 
 1. Click the extension icon → click **⚙ Settings** (or right-click the icon → *Options*)
 2. Select your AI provider:
-   - **Google Gemini 2.0 Flash** — free tier, recommended. Get a key at [aistudio.google.com](https://aistudio.google.com) → *Get API key* → *Create API key*
+   - **Groq (Llama 3.3 70b)** — free tier, recommended. Get a key at [console.groq.com/keys](https://console.groq.com/keys) → *Create API key*. Key starts with `gsk_`
+   - **Google Gemini 2.0 Flash** — free tier. Get a key at [aistudio.google.com](https://aistudio.google.com) → *Get API key* → *Create API key*
    - **OpenAI GPT-4o mini** — paid, requires billing at [platform.openai.com](https://platform.openai.com/api-keys)
 3. Paste your key and click **Save Key**
 
@@ -66,7 +67,7 @@ Navigate to any article or webpage, click the extension icon, and press **Summar
 | **Copy to clipboard** | One-click copy of the full summary |
 | **Summary cache** | Results cached per URL for 24 hours — no duplicate API calls |
 | **Dark mode** | Follows OS preference via `prefers-color-scheme` |
-| **Provider choice** | Gemini (free) or OpenAI — switchable in Settings |
+| **Provider choice** | Groq (free), Gemini (free), or OpenAI — switchable in Settings |
 
 ---
 
@@ -137,7 +138,18 @@ Vite handles the build in two passes triggered by a single `pnpm build`:
 
 ## AI Integration
 
-### Provider: Google Gemini 2.0 Flash (default)
+### Provider: Groq — Llama 3.3 70b (default)
+
+```
+POST https://api.groq.com/openai/v1/chat/completions
+```
+
+- OpenAI-compatible API — same request/response format as OpenAI
+- `response_format: { type: "json_object" }` enforces JSON output
+- `temperature: 0.3`, `max_tokens: 800`
+- Free tier: 14,400 requests/day, 30 requests/minute
+
+### Provider: Google Gemini 2.0 Flash
 
 ```
 POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=<key>

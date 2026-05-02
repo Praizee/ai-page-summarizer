@@ -12,11 +12,17 @@ const PROVIDERS: { value: Provider; label: string; hint: string }[] = [
     label: "OpenAI GPT-4o mini",
     hint: "Paid — requires billing at platform.openai.com",
   },
+  {
+    value: "groq",
+    label: "Groq (Llama 3.3 70b)",
+    hint: "Free tier — 14,400 req/day. Get a key at console.groq.com",
+  },
 ];
 
 const KEY_PATTERNS: Record<Provider, RegExp> = {
   gemini: /^AIza[A-Za-z0-9\-_]{35}/,
   openai: /^sk-[A-Za-z0-9]{20,}/,
+  groq:   /^gsk_[A-Za-z0-9]{20,}/,
 };
 
 type Status = "idle" | "saved" | "removed" | "error";
@@ -235,6 +241,22 @@ export default function App() {
               platform.openai.com/api-keys
             </a>{" "}
             → Create new secret key. Requires a paid account.
+          </p>
+        </div>
+        <div className="px-4 py-3 space-y-0.5">
+          <p className="text-sm font-medium">Groq — Free tier</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            Go to{" "}
+            <a
+              href="https://console.groq.com/keys"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-indigo-600 dark:text-indigo-400"
+            >
+              console.groq.com/keys
+            </a>{" "}
+            → Create API key. 14,400 free requests/day. Key starts with{" "}
+            <span className="font-mono">gsk_</span>.
           </p>
         </div>
       </div>

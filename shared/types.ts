@@ -1,4 +1,4 @@
-export type Provider = 'gemini' | 'openai'
+export type Provider = 'gemini' | 'openai' | 'groq'
 
 export interface StorageConfig {
   apiProvider: Provider
