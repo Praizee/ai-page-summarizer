@@ -37,5 +37,6 @@ export type ExtMessage =
 export type ExtResponse =
   | ({ type: 'SUMMARY_RESULT' } & SummaryResult)
   | { type: 'HIGHLIGHT_DONE' }
+  | { type: 'OK' }
   | { type: 'CONTENT_RESULT'; text: string; title: string; wordCount: number; readingTime: number }
   | { type: 'ERROR'; code: ErrorCode; message: string }
