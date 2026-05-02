@@ -25,8 +25,8 @@ Built with **Vite · React 18 · TypeScript · Tailwind CSS**.
 ### 1. Clone and build
 
 ```bash
-git clone <repo-url>
-cd ai-page-summarizer
+git clone https://github.com/Praizee/hng14-stage-4a.git
+cd hng14-stage-4a
 pnpm install
 pnpm build
 ```
