@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy — AI Page Summarizer</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 16px;
+        line-height: 1.7;
+        color: #18181b;
+        background: #fff;
+        padding: 2rem 1rem;
+      }
+      .wrap {
+        max-width: 680px;
+        margin: 0 auto;
+      }
+      header {
+        margin-bottom: 2.5rem;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 1rem;
+      }
+      .icon {
+        width: 32px;
+        height: 32px;
+        background: #6366f1;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #09090b;
+      }
+      .meta {
+        color: #71717a;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+      }
+      h2 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #09090b;
+        margin: 2rem 0 0.5rem;
+      }
+      p {
+        color: #3f3f46;
+        margin-bottom: 0.75rem;
+      }
+      ul {
+        padding-left: 1.25rem;
+        color: #3f3f46;
+        margin-bottom: 0.75rem;
+      }
+      li {
+        margin-bottom: 0.25rem;
+      }
+      a {
+        color: #6366f1;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .highlight {
+        background: #f4f4f5;
+        border-left: 3px solid #6366f1;
+        padding: 0.75rem 1rem;
+        border-radius: 0 6px 6px 0;
+        margin: 1rem 0;
+        color: #18181b;
+        font-size: 0.9rem;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid #e4e4e7;
+        margin: 2rem 0;
+      }
+      footer {
+        font-size: 0.8rem;
+        color: #a1a1aa;
+        margin-top: 3rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="badge">
+          <div class="icon">AI</div>
+          <span style="font-weight: 600">AI Page Summarizer</span>
+        </div>
+        <h1>Privacy Policy</h1>
+        <p class="meta">Last updated: May 2, 2026</p>
+      </header>
+
+      <div class="highlight">
+        <strong>Short version:</strong> We don't collect, store, or transmit any
+        of your personal data. Your API key never leaves your browser except to
+        call the AI provider you chose.
+      </div>
+
+      <h2>What data this extension handles</h2>
+      <p>
+        AI Page Summarizer handles the following data, all of which stays on
+        your device:
+      </p>
+      <ul>
+        <li>
+          <strong>API key</strong> — stored in
+          <code>chrome.storage.local</code>, accessible only to this extension.
+          Never sent to any server we operate.
+        </li>
+        <li>
+          <strong>Page content</strong> — text extracted from the current tab is
+          sent directly to the AI provider you selected (Groq, Google Gemini, or
+          OpenAI). It is not routed through any intermediate server.
+        </li>
+        <li>
+          <strong>Summary cache</strong> — generated summaries are stored in
+          <code>chrome.storage.local</code> to avoid duplicate API calls. Cached
+          data stays on your device and is never transmitted.
+        </li>
+      </ul>
+
+      <h2>What we do NOT collect</h2>
+      <ul>
+        <li>No personal information (name, email, account details)</li>
+        <li>No browsing history</li>
+        <li>No analytics or telemetry</li>
+        <li>No cookies</li>
+        <li>No data sent to any server operated by this extension</li>
+      </ul>
+
+      <h2>Third-party AI providers</h2>
+      <p>
+        When you summarize a page, its text content is sent to the AI provider
+        you configured in Settings. Each provider has its own privacy policy:
+      </p>
+      <ul>
+        <li>
+          <a
+            href="https://groq.com/privacy-policy/"
+            target="_blank"
+            rel="noopener"
+            >Groq Privacy Policy</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://policies.google.com/privacy"
+            target="_blank"
+            rel="noopener"
+            >Google Privacy Policy</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://openai.com/policies/privacy-policy/"
+            target="_blank"
+            rel="noopener"
+            >OpenAI Privacy Policy</a
+          >
+        </li>
+      </ul>
+      <p>
+        You are responsible for reviewing the terms of your chosen provider.
+        This extension does not endorse or control any third-party service.
+      </p>
+
+      <h2>Permissions</h2>
+      <p>This extension requests the following Chrome permissions:</p>
+      <ul>
+        <li>
+          <strong>storage</strong> — to save your API key and summary cache
+          locally
+        </li>
+        <li>
+          <strong>activeTab</strong> — to read the content of the current tab
+          when you click Summarize
+        </li>
+        <li>
+          <strong>scripting</strong> — to inject the content extraction script
+          into the active tab on demand
+        </li>
+      </ul>
+      <p>
+        No other permissions are requested. The extension does not access tabs
+        you haven't explicitly triggered it on.
+      </p>
+
+      <h2>Data retention</h2>
+      <p>
+        All data (API key and cached summaries) is stored locally in your
+        browser and can be removed at any time by clicking
+        <em>Remove Key</em> in Settings or by uninstalling the extension.
+        Summaries are automatically evicted after 24 hours and the cache is
+        capped at 50 entries.
+      </p>
+
+      <h2>Children's privacy</h2>
+      <p>
+        This extension is not directed at children under 13 and does not
+        knowingly collect any information from them.
+      </p>
+
+      <h2>Changes to this policy</h2>
+      <p>
+        If this policy changes materially, the "Last updated" date above will be
+        revised. Continued use of the extension after changes constitutes
+        acceptance of the updated policy.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Questions? Open an issue on the
+        <a
+          href="https://github.com/Praizee/hng14-stage-4a"
+          target="_blank"
+          rel="noopener"
+          >GitHub repository</a
+        >.
+      </p>
+
+      <hr />
+      <footer>
+        AI Page Summarizer · Built by
+        <a href="https://stephenadeniji.com/" target="_blank" rel="noopener"
+          >Stephen Adeniji</a
+        >
+      </footer>
+    </div>
+  </body>
+</html>
+

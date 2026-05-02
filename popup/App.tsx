@@ -244,7 +244,7 @@ function ResultView({
   }
 
   return (
-    <div className="flex flex-col max-h-[560px] overflow-y-auto">
+    <div className="flex flex-col max-h-[560px] overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700 [&::-webkit-scrollbar-thumb]:rounded-full">
       {/* Title + meta */}
       <div className="px-4 pt-4 pb-3">
         <h2 className="text-sm font-semibold leading-snug line-clamp-2">

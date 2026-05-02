@@ -17,6 +17,7 @@ Built with **Vite · React 18 · TypeScript · Tailwind CSS**.
 > This is a local extension and is **not** published to the Chrome Web Store.
 
 ### Prerequisites
+
 - [Node.js](https://nodejs.org) 18+
 - [pnpm](https://pnpm.io) — `npm i -g pnpm`
 - Google Chrome (or Chromium-based browser)
@@ -43,10 +44,10 @@ The extension icon will appear in your toolbar.
 
 ### 3. Add your API key
 
-1. Click the extension icon → click **⚙ Settings** (or right-click the icon → *Options*)
+1. Click the extension icon → click **⚙ Settings** (or right-click the icon → _Options_)
 2. Select your AI provider:
-   - **Groq (Llama 3.3 70b)** — free tier, recommended. Get a key at [console.groq.com/keys](https://console.groq.com/keys) → *Create API key*. Key starts with `gsk_`
-   - **Google Gemini 2.0 Flash** — free tier. Get a key at [aistudio.google.com](https://aistudio.google.com) → *Get API key* → *Create API key*
+   - **Groq (Llama 3.3 70b)** — free tier, recommended. Get a key at [console.groq.com/keys](https://console.groq.com/keys) → _Create API key_. Key starts with `gsk_`
+   - **Google Gemini 2.0 Flash** — free tier. Get a key at [aistudio.google.com](https://aistudio.google.com) → _Get API key_ → _Create API key_
    - **OpenAI GPT-4o mini** — paid, requires billing at [platform.openai.com](https://platform.openai.com/api-keys)
 3. Paste your key and click **Save Key**
 
@@ -58,16 +59,16 @@ Navigate to any article or webpage, click the extension icon, and press **Summar
 
 ## Features
 
-| Feature | Details |
-|---|---|
-| **AI Summary** | 4–6 bullet points covering the main points |
-| **Key Insights** | 2–3 high-level takeaways |
-| **Reading time** | Estimated from word count (238 wpm average) |
-| **In-page highlights** | Marks key sentences directly on the page |
-| **Copy to clipboard** | One-click copy of the full summary |
-| **Summary cache** | Results cached per URL for 24 hours — no duplicate API calls |
-| **Dark mode** | Follows OS preference via `prefers-color-scheme` |
-| **Provider choice** | Groq (free), Gemini (free), or OpenAI — switchable in Settings |
+| Feature                | Details                                                        |
+| ---------------------- | -------------------------------------------------------------- |
+| **AI Summary**         | 4–6 bullet points covering the main points                     |
+| **Key Insights**       | 2–3 high-level takeaways                                       |
+| **Reading time**       | Estimated from word count (238 wpm average)                    |
+| **In-page highlights** | Marks key sentences directly on the page                       |
+| **Copy to clipboard**  | One-click copy of the full summary                             |
+| **Summary cache**      | Results cached per URL for 24 hours — no duplicate API calls   |
+| **Dark mode**          | Follows OS preference via `prefers-color-scheme`               |
+| **Provider choice**    | Groq (free), Gemini (free), or OpenAI — switchable in Settings |
 
 ---
 
@@ -196,14 +197,14 @@ Text is truncated to **12,000 characters** (~3,000 tokens) before being sent to 
 
 ## Security
 
-| Concern | Decision |
-|---|---|
-| **API key storage** | Stored only in `chrome.storage.local` — inaccessible to webpage scripts. Never hardcoded, never passed to popup or content script. |
-| **API key in memory** | The background service worker reads the key into a local variable only for the duration of the fetch call. |
-| **XSS in popup** | React renders all AI text as JSX text nodes — escaped by default. No `dangerouslySetInnerHTML` anywhere. |
-| **XSS in highlights** | DOM manipulation uses `splitText()`, `insertBefore()`, `createTextNode()` only — no `innerHTML` with AI-returned strings. |
-| **Remote scripts** | `@mozilla/readability` is bundled by Vite at build time. No runtime CDN fetches. |
-| **Permissions** | Minimal: `storage`, `activeTab`, `scripting`. No `tabs` (broad permission), no `host_permissions`. |
+| Concern               | Decision                                                                                                                                              |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **API key storage**   | Stored only in `chrome.storage.local` — inaccessible to webpage scripts. Never hardcoded, never passed to popup or content script.                    |
+| **API key in memory** | The background service worker reads the key into a local variable only for the duration of the fetch call.                                            |
+| **XSS in popup**      | React renders all AI text as JSX text nodes — escaped by default. No `dangerouslySetInnerHTML` anywhere.                                              |
+| **XSS in highlights** | DOM manipulation uses `splitText()`, `insertBefore()`, `createTextNode()` only — no `innerHTML` with AI-returned strings.                             |
+| **Remote scripts**    | `@mozilla/readability` is bundled by Vite at build time. No runtime CDN fetches.                                                                      |
+| **Permissions**       | Minimal: `storage`, `activeTab`, `scripting`. No `tabs` (broad permission), no `host_permissions`.                                                    |
 | **Content isolation** | Content scripts run in Chrome's isolated world — the host page's JavaScript cannot reach `chrome.storage` or communicate with the extension directly. |
 
 ---
@@ -235,3 +236,4 @@ pnpm build    # production build → dist/
 ```
 
 After any code change in watch mode, go to `chrome://extensions` and click the **↺ reload** button on the extension card to pick up the new `dist/`.
+
