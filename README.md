@@ -45,7 +45,7 @@ The extension icon will appear in your toolbar.
 
 1. Click the extension icon → click **⚙ Settings** (or right-click the icon → *Options*)
 2. Select your AI provider:
-   - **Google Gemini 1.5 Flash** — free tier, recommended. Get a key at [aistudio.google.com](https://aistudio.google.com) → *Get API key* → *Create API key*
+   - **Google Gemini 2.0 Flash** — free tier, recommended. Get a key at [aistudio.google.com](https://aistudio.google.com) → *Get API key* → *Create API key*
    - **OpenAI GPT-4o mini** — paid, requires billing at [platform.openai.com](https://platform.openai.com/api-keys)
 3. Paste your key and click **Save Key**
 
@@ -137,10 +137,10 @@ Vite handles the build in two passes triggered by a single `pnpm build`:
 
 ## AI Integration
 
-### Provider: Google Gemini 1.5 Flash (default)
+### Provider: Google Gemini 2.0 Flash (default)
 
 ```
-POST https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<key>
+POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=<key>
 ```
 
 - `responseMimeType: "application/json"` enforces structured JSON output
