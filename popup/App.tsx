@@ -42,8 +42,9 @@ export default function App() {
   }, []);
 
   function showError(code: ErrorCode, fallback: string) {
+    const message = code === "API_ERROR" ? fallback : ERROR_MESSAGES[code];
     setErrorCode(code);
-    setErrorMsg(ERROR_MESSAGES[code] ?? fallback);
+    setErrorMsg(message ?? fallback);
     setView("error");
   }
 

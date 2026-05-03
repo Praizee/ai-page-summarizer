@@ -8,7 +8,7 @@ import type {
 } from "../shared/types";
 import { cacheKey, CACHE_TTL_MS, MAX_CACHE_ENTRIES } from "../shared/utils";
 
-const PROXY_URL = "https://your-vercel-app.vercel.app/api/summarize";
+const PROXY_URL = "https://hng14-stage-4a.vercel.app/api/summarize";
 
 // Message router
 chrome.runtime.onMessage.addListener(
@@ -132,8 +132,18 @@ async function fetchSummary(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ provider, prompt }),
     });
-    if (!res.ok) return { error: httpError(res.status) };
-    const data = (await res.json()) as { raw?: string };
+    const data = (await res.json()) as { raw?: string; error?: string };
+    if (!res.ok) {
+      return {
+        error: fail(
+          "API_ERROR",
+          data.error ?? `Proxy error (${res.status}). Try again.`,
+        ),
+      };
+    }
+    if (data.error) {
+      return { error: fail("API_ERROR", data.error) };
+    }
     const raw = data.raw ?? "";
 
     const parsed: unknown = JSON.parse(raw);
