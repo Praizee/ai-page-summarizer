@@ -8,6 +8,8 @@ import type {
 } from "../shared/types";
 import { cacheKey, CACHE_TTL_MS, MAX_CACHE_ENTRIES } from "../shared/utils";
 
+const PROXY_URL = "https://your-vercel-app.vercel.app/api/summarize";
+
 // Message router
 chrome.runtime.onMessage.addListener(
   (msg: ExtMessage, _sender, sendResponse: (r: ExtResponse) => void) => {
@@ -46,11 +48,7 @@ async function handleSummarizePage(
   // Load API config
   const store = (await storageGetMany([
     "apiProvider",
-    "apiKey",
   ])) as Partial<StorageConfig>;
-  if (!store.apiKey) {
-    return fail("NO_API_KEY", "No API key set. Open Settings to add one.");
-  }
   const provider: Provider = store.apiProvider ?? "gemini";
 
   // Extract page content (inject content script if needed)
@@ -76,11 +74,7 @@ async function handleSummarizePage(
   const { text, title, wordCount, readingTime } = extraction;
 
   // Call AI
-  const result = await fetchSummary(
-    provider,
-    store.apiKey,
-    buildPrompt(text, title),
-  );
+  const result = await fetchSummary(provider, buildPrompt(text, title));
   if ("error" in result) return result.error;
 
   // Persist to cache
@@ -121,88 +115,26 @@ type AiResult = AiSuccess | { error: ExtResponse };
 
 async function fetchSummary(
   provider: Provider,
-  apiKey: string,
   prompt: string,
 ): Promise<AiResult> {
   try {
-    let raw: string;
-
-    if (provider === "openai") {
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are a helpful webpage summarizer. Always respond with valid JSON.",
-            },
-            { role: "user", content: prompt },
-          ],
-          temperature: 0.3,
-          max_tokens: 800,
-          response_format: { type: "json_object" },
-        }),
-      });
-      if (!res.ok) return { error: httpError(res.status) };
-      const data = (await res.json()) as {
-        choices: { message: { content: string } }[];
+    if (PROXY_URL.includes("your-vercel-app")) {
+      return {
+        error: fail(
+          "API_ERROR",
+          "Proxy URL not configured. Update PROXY_URL in background/index.ts.",
+        ),
       };
-      raw = data.choices[0].message.content;
-    } else if (provider === "groq") {
-      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are a helpful webpage summarizer. Always respond with valid JSON.",
-            },
-            { role: "user", content: prompt },
-          ],
-          temperature: 0.3,
-          max_tokens: 800,
-          response_format: { type: "json_object" },
-        }),
-      });
-      if (!res.ok) return { error: httpError(res.status) };
-      const data = (await res.json()) as {
-        choices: { message: { content: string } }[];
-      };
-      raw = data.choices[0].message.content;
-    } else {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: {
-              temperature: 0.3,
-              maxOutputTokens: 800,
-              responseMimeType: "application/json",
-            },
-          }),
-        },
-      );
-      if (!res.ok) return { error: httpError(res.status) };
-      const data = (await res.json()) as {
-        candidates: { content: { parts: { text: string }[] } }[];
-      };
-      raw = data.candidates[0].content.parts[0].text;
     }
+
+    const res = await fetch(PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ provider, prompt }),
+    });
+    if (!res.ok) return { error: httpError(res.status) };
+    const data = (await res.json()) as { raw?: string };
+    const raw = data.raw ?? "";
 
     const parsed: unknown = JSON.parse(raw);
     const validated = validateAiResponse(parsed);

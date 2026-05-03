@@ -42,14 +42,23 @@ This produces a `dist/` folder — that is the installable extension.
 
 The extension icon will appear in your toolbar.
 
-### 3. Add your API key
+### 3. Deploy the proxy server
+
+This extension uses a remote proxy server to keep API keys out of the browser.
+
+1. Deploy the serverless function in [api/summarize.ts](api/summarize.ts) to Vercel
+2. Set the environment variables in Vercel:
+
+- `OPENAI_API_KEY`
+- `GROQ_API_KEY`
+- `GEMINI_API_KEY`
+
+3. Update `PROXY_URL` in [background/index.ts](background/index.ts) with your Vercel URL
+
+### 4. Choose a provider
 
 1. Click the extension icon → click **⚙ Settings** (or right-click the icon → _Options_)
-2. Select your AI provider:
-   - **Groq (Llama 3.3 70b)** — free tier, recommended. Get a key at [console.groq.com/keys](https://console.groq.com/keys) → _Create API key_. Key starts with `gsk_`
-   - **Google Gemini 2.0 Flash** — free tier. Get a key at [aistudio.google.com](https://aistudio.google.com) → _Get API key_ → _Create API key_
-   - **OpenAI GPT-4o mini** — paid, requires billing at [platform.openai.com](https://platform.openai.com/api-keys)
-3. Paste your key and click **Save Key**
+2. Select your AI provider and click **Save Provider**
 
 ### 4. Use it
 

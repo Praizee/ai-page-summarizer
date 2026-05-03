@@ -6,10 +6,9 @@ import { Settings } from "lucide-react";
 type View = "idle" | "loading" | "error" | "result";
 
 const ERROR_MESSAGES: Record<ErrorCode, string> = {
-  NO_API_KEY: "No API key set. Open Settings to add one.",
   EXTRACTION_FAIL: "Couldn't extract content from this page.",
   UNSUPPORTED_PAGE: "This page type can't be summarized.",
-  API_AUTH_ERROR: "Invalid API key. Check your Settings.",
+  API_AUTH_ERROR: "Proxy auth error. Check your server keys.",
   RATE_LIMITED: "Rate limit hit. Wait a moment and try again.",
   NETWORK_ERROR: "Network error. Check your connection.",
   API_ERROR: "AI service error. Try again shortly.",
@@ -180,7 +179,7 @@ function ErrorView({
   onRetry: () => void;
   onSettings: () => void;
 }) {
-  const showSettings = code === "NO_API_KEY" || code === "API_AUTH_ERROR";
+  const showSettings = code === "API_AUTH_ERROR";
   return (
     <div className="p-5 flex flex-col gap-3">
       <div className="flex items-start gap-3 p-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-100 dark:border-red-900">
